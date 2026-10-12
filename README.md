@@ -1,12 +1,18 @@
-<a href="https://thcol.in"><img src="credits.svg" width="100%" alt="Opening credits. thcolin presents Thomas Colin, lead developer, architect, designer and instructor. With sensorr, gmca, oleoo, and introducing cinetropes, teevy. Thomas Colin, Product Engineer, worker at @coopTilleuls, Nantes." /></a>
+I'm Thomas, Product Engineer at [@coopTilleuls](https://les-tilleuls.coop/) in Nantes. I love building interfaces, most of them about culture and cinema.
 
-I love building interfaces, most of them about culture and cinema.
+<p align="center"><b>NOW SHOWING</b></p>
 
-- [sensorr](https://github.com/thcolin/sensorr), your friendly Digital Video Recorder. Think VCR, but in modern times.
-- [gmca](https://github.com/thcolin/gamepad-media-center-aggregator), one controller-first client for Plex, Jellyfin, Emby and Stremio, on any device you left in a drawer.
-- [oleoo](https://github.com/thcolin/oleoo), a scene release name parser for JavaScript, Go and Rust.
-- [react-responsive-virtual-grid](https://github.com/thcolin/react-responsive-virtual-grid), a dead-simple React virtual grid.
+<p align="center">
+  <a href="https://github.com/thcolin/sensorr"><img src="images/poster-sensorr.jpg" width="32%" alt="sensorr, your friendly Digital Video Recorder. Think VCR, but in modern times." /></a>
+  <a href="https://github.com/thcolin/gamepad-media-center-aggregator"><img src="images/poster-gmca.jpg" width="32%" alt="GMCA, Gamepad Media Center Aggregator. Runs Plex on your Switch." /></a>
+  <a href="https://github.com/thcolin/oleoo"><img src="images/poster-oleoo.jpg" width="32%" alt="oleoo, Scene/P2P/Warez release name parser." /></a>
+</p>
 
-Not released yet: cinetropes, films told by their tropes and mood, and teevy, a Mac running a real CRT as a TV.
+<p align="center"><b>COMING SOON</b></p>
 
-Demos on [thcol.in](https://thcol.in) · [me@thcol.in](mailto:me@thcol.in)
+<p align="center">
+  <a href="https://thcol.in/#cinetropes"><img src="images/poster-cinetropes.jpg" width="24%" alt="cinetropes, explore, discover, find. Coming soon." /></a>
+  <a href="https://thcol.in/#teevy"><img src="images/poster-teevy.jpg" width="24%" alt="teevy, a Mac drives a real CRT as a television. Not for release." /></a>
+</p>
+
+<p align="center">More on <a href="https://thcol.in">thcol.in</a> · <a href="mailto:me@thcol.in">me@thcol.in</a></p>
