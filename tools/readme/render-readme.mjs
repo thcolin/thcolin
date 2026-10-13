@@ -17,7 +17,7 @@ const ROWS = [
   { name: 'prompt-3d', sel: 'img.prompt[src$="prompt-3d.svg"]', dsf: 2 },
   { name: 'retro', sel: '.img.retro', dsf: 1, fps: 20 },
   { name: 'daily', sel: '.img.daily', dsf: 2, fps: 25 },
-  { name: 'sensorr', sel: '.img.sensorr', dsf: 1, fps: 20 },
+  { name: 'sensorr', sel: '.img.sensorr', dsf: 2, fps: 20 },
   { name: 'printing', sel: '.img.printing', dsf: 1, fps: 20 },
 ].filter((r) => !only || only.split(',').includes(r.name))
 
