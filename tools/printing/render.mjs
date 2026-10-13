@@ -7,10 +7,12 @@ import { mkdirSync, readFileSync, rmSync, existsSync } from 'node:fs'
 import { dirname, join, extname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { parseArgs } from 'node:util'
+// The thcol.in checkout next to this repository, or THCOL_IN
+const THCOL_IN = process.env.THCOL_IN ?? new URL('../../../thcol.in', import.meta.url).pathname
 
-const require = createRequire('/Users/thcolin/Projects/perso/thcol.in/package.json')
+const require = createRequire(`${THCOL_IN}/package.json`)
 const { chromium } = require('playwright')
-const THREE_DIR = '/Users/thcolin/Projects/perso/thcol.in/node_modules/three'
+const THREE_DIR = `${THCOL_IN}/node_modules/three`
 const HERE = dirname(fileURLToPath(import.meta.url))
 
 const { values: args } = parseArgs({

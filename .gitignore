@@ -1,0 +1,7 @@
+node_modules/
+tools/daily/work/
+tools/daily/state/
+__pycache__/
+frames-*/
+tools/teevy/dark/
+tools/printing/stl/

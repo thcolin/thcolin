@@ -1,5 +1,7 @@
 import { createRequire } from 'node:module'
-const require = createRequire('/Users/thcolin/Projects/perso/thcol.in/package.json')
+// The thcol.in checkout next to this repository, or THCOL_IN
+const THCOL_IN = process.env.THCOL_IN ?? new URL('../../../thcol.in', import.meta.url).pathname
+const require = createRequire(`${THCOL_IN}/package.json`)
 export const { chromium } = require('playwright')
 
 // Virtual time: page.clock drives timers and rAF; CSS animations are paused and set from the same clock

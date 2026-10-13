@@ -1,7 +1,7 @@
 import os, shutil
 from common import FPS, bezier, magick, assemble, sheet, fresh
 
-A = '/Users/thcolin/Projects/perso/thcol.in/src/assets/sensorr'
+A = os.path.join(os.environ.get('THCOL_IN', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'thcol.in')), 'src', 'assets', 'sensorr')
 HERE = os.path.dirname(os.path.abspath(__file__))
 SRC, OUT = f'{HERE}/work-sensorr', f'{HERE}/frames-sensorr'
 fresh(SRC); fresh(OUT)

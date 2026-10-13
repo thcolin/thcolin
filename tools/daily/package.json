@@ -1,0 +1,12 @@
+{
+  "name": "thcolin-daily",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "reveal": "node daily.mjs reveal",
+    "today": "node daily.mjs today"
+  },
+  "dependencies": {
+    "playwright": "1.58.2"
+  }
+}

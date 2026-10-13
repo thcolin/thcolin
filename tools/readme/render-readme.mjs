@@ -1,6 +1,8 @@
 import { createRequire } from 'module'
 import { mkdirSync, rmSync } from 'fs'
-const require = createRequire('/Users/thcolin/Projects/perso/thcol.in/package.json')
+// The thcol.in checkout next to this repository, or THCOL_IN
+const THCOL_IN = process.env.THCOL_IN ?? new URL('../../../thcol.in', import.meta.url).pathname
+const require = createRequire(`${THCOL_IN}/package.json`)
 const { chromium } = require('playwright')
 
 // Every image of the README, shot from the mock (profile.html) on GitHub's dark ground. Animated WebPs are swapped for

@@ -1,0 +1,71 @@
+# The daily row of the README. The day turns at midnight UTC on cinetropes (daily.service.ts, getEndOfDayUTC):
+# before it, the run keeps today's answer in the Actions cache, never in the repository, since today's game is still
+# on; after it, the run draws the new riddle with yesterday's answer under it and commits images/daily.webp.
+# Scheduled runs can start late: the reveal leaves an hour and a half before midnight
+name: daily
+
+on:
+  schedule:
+    - cron: '30 22 * * *'
+    - cron: '15 0 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: reveal or today
+        required: true
+        default: today
+        type: choice
+        options: [today, reveal]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: daily
+  cancel-in-progress: false
+
+jobs:
+  daily:
+    runs-on: ubuntu-latest
+    env:
+      MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || (github.event.schedule == '30 22 * * *' && 'reveal' || 'today') }}
+    defaults:
+      run:
+        working-directory: tools/daily
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: tools/daily/package-lock.json
+      - run: npm ci
+      - run: npx playwright install --with-deps chromium
+      - run: sudo apt-get install -y webp
+        if: env.MODE == 'today'
+
+      - uses: actions/cache/restore@v4
+        if: env.MODE == 'today'
+        with:
+          path: tools/daily/state
+          key: daily-reveal-none
+          restore-keys: daily-reveal-
+
+      - run: node daily.mjs ${{ env.MODE }}
+
+      - uses: actions/cache/save@v4
+        if: env.MODE == 'reveal'
+        with:
+          path: tools/daily/state
+          key: daily-reveal-${{ github.run_id }}
+
+      - name: Commit the new row
+        if: env.MODE == 'today'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ../../images/daily.webp
+          git diff --cached --quiet && exit 0
+          day=$(curl -s https://beta.cinetropes.com/api/daily | node -pe "JSON.parse(require('fs').readFileSync(0)).gameDay")
+          git commit -m "chore(profile): draw cinetropes daily #$day"
+          git push

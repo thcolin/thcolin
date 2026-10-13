@@ -2,7 +2,9 @@
 // cashier, works offered, out to the street, back in through the door. The loop closes on the iris.
 import { createRequire } from 'module'
 import { mkdirSync, rmSync } from 'fs'
-const require = createRequire('/Users/thcolin/Projects/perso/thcol.in/package.json')
+// The thcol.in checkout next to this repository, or THCOL_IN
+const THCOL_IN = process.env.THCOL_IN ?? new URL('../../../thcol.in', import.meta.url).pathname
+const require = createRequire(`${THCOL_IN}/package.json`)
 const { chromium } = require('playwright')
 
 const FACADE = process.env.FACADE || 'scene_cyberpunk_european_urban_berlin_techno'

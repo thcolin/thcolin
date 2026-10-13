@@ -1,8 +1,8 @@
 import os, sys
-sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'v2', 'apps'))
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from common import FPS, bezier, magick, assemble, fresh
 
-A = '/Users/thcolin/Projects/perso/thcol.in/src/assets/gmca'
+A = os.path.join(os.environ.get('THCOL_IN', os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'thcol.in')), 'src', 'assets', 'gmca')
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT = f'{HERE}/frames-gmca'
 fresh(OUT)

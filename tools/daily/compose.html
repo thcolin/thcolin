@@ -1,0 +1,67 @@
+<!doctype html>
+<meta charset="utf-8">
+<!-- The README's daily row, 830 px wide on GitHub's dark ground. Every piece is a capture from work/, shown at its
+     capture's CSS size times data-scale; daily.mjs swaps the poster's frames and shoots each one -->
+<style>
+  html, body { margin: 0; background: #0d1117 }
+  img { display: block }
+  .daily { width: 830px; padding: 8px 0 24px }
+  .stage { position: relative; height: 712px }
+  .stage .head { position: absolute; left: 0; right: 0; top: 4px; display: grid; justify-items: center; gap: 16px }
+  .stage .head .guess { margin: -24px 0 }
+  .stage .head .film { display: grid; justify-items: center; gap: 8px }
+  .stage .head .riddle { margin-bottom: 8px }
+  .stage .poster { position: absolute; left: -6px; top: 80px; transform: rotate(-8deg); filter: drop-shadow(0 22px 26px #000d); z-index: 2 }
+  .stage .clues { position: absolute; left: 0; right: 0; top: 307px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px }
+  .stage .clue { width: 100% !important; clip-path: inset(2px round 18px) }
+  .play { margin: 22px auto 0; border-radius: 8px }
+  .yesterday-title { margin: 18px auto -2px }
+  /* The clue cards' own frame, read on their capture and brought to their display scale: an 8 px edge, an 8 px ring, the dark inside */
+  .yesterday { display: flex; align-items: center; gap: 28px; padding: 32px 30px; border-radius: 22px; background: #0a0a0a; box-shadow: inset 0 0 0 8px #0a0a0a, inset 0 0 0 16px #0f0f0f, 0 18px 30px #0008 }
+  .yesterday .info { display: grid; gap: 8px; justify-items: start }
+  .yesterday .info img:first-child { margin-bottom: 8px }
+  .yesterday .glyphs { margin-left: auto; display: flex; align-items: center; gap: 28px; padding-right: 8px }
+  .yesterday .glyphs img { width: 64px !important; height: 64px; object-fit: contain }
+  body:not(.has-yesterday) .yesterday, body:not(.has-yesterday) .yesterday-title { display: none }
+</style>
+<body>
+<div class="daily">
+  <div class="stage">
+    <img class="poster" id="poster" data-part="holo/000" data-scale="0.66" alt="">
+    <div class="head">
+      <img data-part="logo" data-scale="0.82" alt="">
+      <img class="guess" data-part="hero-guess" data-scale="0.69" alt="">
+      <div class="film"><img class="riddle" data-part="title" data-scale="0.5" alt=""><img data-part="meta" alt=""></div>
+    </div>
+    <div class="clues">
+      <img class="clue" data-part="clue-0" alt=""><img class="clue" data-part="clue-1" alt=""><img class="clue" data-part="clue-2" alt="">
+    </div>
+  </div>
+  <img class="play" data-part="play" alt="">
+  <img class="yesterday-title" data-part="yesterday/hero" data-scale="0.375" alt="">
+  <div class="yesterday">
+    <img data-part="yesterday/card" data-scale="0.6" alt="">
+    <div class="info">
+      <img data-part="yesterday/title" data-scale="0.46" alt="">
+      <img data-part="yesterday/meta" alt="">
+      <img data-part="yesterday/director" alt="">
+    </div>
+    <div class="glyphs"><img data-part="yesterday/glyph-0" alt=""><img data-part="yesterday/glyph-1" alt=""><img data-part="yesterday/glyph-2" alt=""></div>
+  </div>
+</div>
+<script>
+  // Captures are 2x: each piece is shown at half its pixels, times its scale
+  const yesterday = location.search.includes('yesterday')
+  document.body.classList.toggle('has-yesterday', yesterday)
+  const parts = [...document.querySelectorAll('[data-part]')].filter((img) => yesterday || !img.dataset.part.startsWith('yesterday/'))
+  window.ready = Promise.all(parts.map((img) => new Promise((resolve, reject) => {
+    img.onload = () => { img.style.width = `${img.naturalWidth / 2 * (img.dataset.scale ?? 1)}px`; resolve() }
+    img.onerror = () => reject(new Error(`missing work/${img.dataset.part}.png`))
+    img.src = `work/${img.dataset.part}.png`
+  })))
+  window.poster = (frame) => new Promise((resolve) => {
+    const img = document.getElementById('poster')
+    img.onload = resolve
+    img.src = `work/holo/${String(frame).padStart(3, '0')}.png`
+  })
+</script>

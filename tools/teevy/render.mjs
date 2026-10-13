@@ -1,6 +1,8 @@
 import { createRequire } from 'module'
 import { readdirSync, mkdirSync } from 'fs'
-const require = createRequire('/Users/thcolin/Projects/perso/thcol.in/package.json')
+// The thcol.in checkout next to this repository, or THCOL_IN
+const THCOL_IN = process.env.THCOL_IN ?? new URL('../../../thcol.in', import.meta.url).pathname
+const require = createRequire(`${THCOL_IN}/package.json`)
 const { chromium } = require('playwright')
 const [framesDir, outDir, only] = process.argv.slice(2)
 mkdirSync(outDir, { recursive: true })
