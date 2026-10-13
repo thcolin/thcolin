@@ -115,6 +115,9 @@ const reveal = async () => {
   await page.mouse.move(0, 0)
   await sleep(800)
   await shot(page, await box(page, '.cd__card'), `${STATE}card.png`)
+  // The band keeps a title on one line and clips it at its panel; a long one wraps here instead, whole
+  await page.addStyleTag({ content: '.cd__panel, .cd__film-title, .cd__film-title * { overflow: visible !important; } .cd__film-title, .cd__film-title * { white-space: normal !important; } .cd__film-title { max-width: 900px; } .cd__accordion { visibility: hidden !important; }' })
+  await sleep(300)
   await shot(page, await tight(page, '.cd__film-title'), `${STATE}title.png`)
   await shot(page, await tight(page, '.cd__meta'), `${STATE}meta.png`)
   await shot(page, await tight(page, '.cd__director'), `${STATE}director.png`)

@@ -6,21 +6,23 @@
   html, body { margin: 0; background: #0d1117 }
   img { display: block }
   .daily { width: 830px; padding: 8px 0 24px }
-  .stage { position: relative; height: 712px }
-  .stage .head { position: absolute; left: 0; right: 0; top: 4px; display: grid; justify-items: center; gap: 16px }
+  .stage { position: relative; padding-top: 4px }
+  /* The head flows: a title on several lines pushes the cards down instead of running under them */
+  .stage .head { display: grid; justify-items: center; align-content: start; gap: 16px; min-height: 280px }
   .stage .head .guess { margin: -24px 0 }
   .stage .head .film { display: grid; justify-items: center; gap: 8px }
   .stage .head .riddle { margin-bottom: 8px }
   .stage .poster { position: absolute; left: -6px; top: 80px; transform: rotate(-8deg); filter: drop-shadow(0 22px 26px #000d); z-index: 2 }
-  .stage .clues { position: absolute; left: 0; right: 0; top: 307px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px }
+  .stage .clues { margin-top: 23px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px }
   .stage .clue { width: 100% !important; clip-path: inset(2px round 18px) }
   .play { margin: 22px auto 0; border-radius: 8px }
   .yesterday-title { margin: 18px auto -2px }
   /* The clue cards' own frame, read on their capture and brought to their display scale: an 8 px edge, an 8 px ring, the dark inside */
   .yesterday { display: flex; align-items: center; gap: 28px; padding: 32px 30px; border-radius: 22px; background: #0a0a0a; box-shadow: inset 0 0 0 8px #0a0a0a, inset 0 0 0 16px #0f0f0f }
-  .yesterday .info { display: grid; gap: 8px; justify-items: start }
+  .yesterday .info { display: grid; gap: 8px; justify-items: start; flex: 1 1 0; min-width: 0 }
+  .yesterday .info img { max-width: 100% }
   .yesterday .info img:first-child { margin-bottom: 8px }
-  .yesterday .glyphs { margin-left: auto; display: flex; align-items: center; gap: 20px; padding-right: 8px }
+  .yesterday .glyphs { flex: none; margin-left: auto; display: flex; align-items: center; gap: 20px; padding-right: 8px }
   .yesterday .glyphs img { width: 76px !important; height: 76px; object-fit: contain }
   body:not(.has-yesterday) .yesterday, body:not(.has-yesterday) .yesterday-title { display: none }
 </style>
