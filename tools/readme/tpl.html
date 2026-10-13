@@ -72,7 +72,8 @@
 
   /* Yesterday reduced to its reveal, with its charts on the right */
   .daily .yesterday-title { display: block; width: 242px; margin: 18px auto -2px }
-  .daily .yesterday { display: flex; align-items: center; gap: 28px; padding: 22px 16px; border: 1px solid #ffffff14; border-radius: 14px }
+  /* The clue cards' own frame, read on their capture and brought to their display scale: an 8 px edge, an 8 px ring, the dark inside */
+  .daily .yesterday { display: flex; align-items: center; gap: 28px; padding: 32px 30px; border-radius: 22px; background: #0a0a0a; box-shadow: inset 0 0 0 8px #0a0a0a, inset 0 0 0 16px #0f0f0f }
   .daily .yesterday .info { display: grid; gap: 8px; justify-items: start }
   .daily .yesterday .info img:first-child, .stage .head .riddle { margin-bottom: 8px }
   .daily .stage .head .film { display: grid; justify-items: center; gap: 8px }
