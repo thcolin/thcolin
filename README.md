@@ -9,8 +9,10 @@
   I design and build interfaces, from the first sketch to the shipped screen.
 </p>
 <p align="center">
-  On my own time, I turn what I use every day into products:<br />
-  my TV, my media server, my rack, and a game about films.
+  On my own time, I turn what I use every day into ideas:<br />
+  my CRT becomes a tamagotchi and gets plugged into my Plex,<br />
+  I make sure I can access my media server from all my devices,<br />
+  I DIY on my rack, and I build a video game about saving an old cinema theatre.
 </p>
 <p align="center">
   Mostly, I watch films. Half of what follows exists because of them.
