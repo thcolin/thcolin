@@ -1,0 +1,61 @@
+<!doctype html>
+<meta charset="utf-8">
+<style>
+  /* Figma « Retro CRT TV Mockup », Dark Mode (node 1:154), positions relative to « Tv & Design » (145.17, 171.88) */
+  html, body { margin: 0; background: transparent }
+  #tv { position: relative; width: 790px; height: 800px; overflow: visible }
+  .abs { position: absolute }
+  .mask { -webkit-mask-image: url(dark/01452.svg); mask-image: url(dark/01452.svg); mask-mode: alpha; mask-repeat: no-repeat; -webkit-mask-repeat: no-repeat; mask-size: 576.674px 472.426px; -webkit-mask-size: 576.674px 472.426px }
+  .design { left: 29.62px; top: 75.48px; width: 626.497px; height: 515.017px; mask-position: 24.495px 21.323px; -webkit-mask-position: 24.495px 21.323px; overflow: hidden }
+  .design { background: #000 }
+  .design img { position: absolute; left: 24.495px; top: 21.323px; width: 660px; height: 495px; display: block; transform-origin: 0 0 }
+  .extra { left: 29.62px; top: 75.48px; width: 626.497px; height: 515.017px; mask-position: 24.495px 21.323px; -webkit-mask-position: 24.495px 21.323px; mix-blend-mode: overlay }
+  .extra img { width: 100%; height: 100%; display: block }
+  .light { display: flex; align-items: center; justify-content: center; mix-blend-mode: lighten }
+  .light > div > div { position: relative }
+  .light img { position: absolute; display: block; max-width: none; width: 100%; height: 100% }
+  .tvimg { left: 0; top: 0; width: 789.654px; height: 736.236px; object-fit: cover }
+  .shadow { left: 20.49px; top: 644.21px; width: 610.755px; height: 99.484px }
+  .shadow img { position: absolute; inset: -71.42% -11.63%; width: 123.26%; height: 242.84% }
+</style>
+<div id="tv">
+  <div class="abs shadow"><img src="dark/e3882.svg" alt=""></div>
+  <div class="abs mask design"><img id="screen" src="" alt=""></div>
+  <div class="abs mask extra"><img src="dark/9ab68.png" alt=""></div>
+  <div class="abs light" style="left:94.28px;top:121.57px;width:170.485px;height:352.895px"><div style="transform:rotate(9.97deg) skewX(2.92deg)"><div class="mask" style="width:131.624px;height:332.618px;mask-position:-40.168px -24.762px;-webkit-mask-position:-40.168px -24.762px"><img src="dark/d6ee5.svg" style="inset:-8.54% -21.59%;width:143.18%;height:117.08%" alt=""></div></div></div>
+  <div class="abs light" style="left:-61.58px;top:348.07px;width:260.87px;height:236.549px"><div style="transform:rotate(27.55deg)"><div class="mask" style="width:213.022px;height:155.68px;mask-position:115.693px -251.26px;-webkit-mask-position:115.693px -251.26px"><img src="dark/c1e5c.svg" style="inset:-10.51% -7.68%;width:115.36%;height:121.02%" alt=""></div></div></div>
+  <div class="abs light" style="left:2.54px;top:-218.31px;width:968.538px;height:964.414px"><div style="transform:rotate(128.12deg) scaleY(-1)"><div class="mask" style="width:676.19px;height:700.531px;mask-position:51.566px 315.117px;-webkit-mask-position:51.566px 315.117px"><img src="dark/d9582.svg" style="inset:-9.16% -9.48%;width:118.96%;height:118.32%" alt=""></div></div></div>
+  <div class="abs light" style="left:325.91px;top:22.8px;width:339.837px;height:275.994px"><div style="transform:rotate(141.51deg) scaleY(0.98) skewX(12.13deg)"><div class="mask" style="width:147.998px;height:289.806px;mask-position:-271.799px 74.001px;-webkit-mask-position:-271.799px 74.001px"><img src="dark/1c82c.svg" style="inset:-19.61% -38.41%;width:176.82%;height:139.22%" alt=""></div></div></div>
+  <div class="abs light" style="left:342.25px;top:-16.99px;width:191.195px;height:250.879px"><div style="transform:rotate(56.84deg) scaleY(0.98) skewX(12.13deg)"><div class="mask" style="width:202.952px;height:113.958px;mask-position:-288.141px 113.791px;-webkit-mask-position:-288.141px 113.791px"><img src="dark/7c448.svg" style="inset:-62.35% -35.01%;width:170.02%;height:224.7%" alt=""></div></div></div>
+  <img class="abs tvimg" src="dark/816ff.png" alt="">
+</div>
+<script>
+  // Corners of the screen in the mask's own space (dark/01452.svg): the TV is seen three-quarters, so the picture follows the glass
+  const QUAD = [[10, 1], [576.5, 20], [570.5, 472.4], [23, 425]]
+  const W = 660, H = 495
+  const solve = (A, b) => {
+    const n = b.length
+    for (let i = 0; i < n; i++) {
+      let m = i
+      for (let r = i + 1; r < n; r++) if (Math.abs(A[r][i]) > Math.abs(A[m][i])) m = r
+      ;[A[i], A[m]] = [A[m], A[i]]; [b[i], b[m]] = [b[m], b[i]]
+      for (let r = i + 1; r < n; r++) {
+        const f = A[r][i] / A[i][i]
+        for (let c = i; c < n; c++) A[r][c] -= f * A[i][c]
+        b[r] -= f * b[i]
+      }
+    }
+    const x = Array(n).fill(0)
+    for (let i = n - 1; i >= 0; i--) x[i] = (b[i] - A[i].slice(i + 1).reduce((s, v, k) => s + v * x[i + 1 + k], 0)) / A[i][i]
+    return x
+  }
+  const src = [[0, 0], [W, 0], [W, H], [0, H]]
+  const A = [], b = []
+  src.forEach(([x, y], i) => {
+    const [u, v] = QUAD[i]
+    A.push([x, y, 1, 0, 0, 0, -u * x, -u * y]); b.push(u)
+    A.push([0, 0, 0, x, y, 1, -v * x, -v * y]); b.push(v)
+  })
+  const [a, bb, c, d, e, f, g, h] = solve(A, b)
+  document.getElementById('screen').style.transform = `matrix3d(${[a, d, 0, g, bb, e, 0, h, 0, 0, 1, 0, c, f, 0, 1].join(',')})`
+</script>

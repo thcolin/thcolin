@@ -1,18 +1,89 @@
-I'm Thomas, Product Engineer at [@coopTilleuls](https://les-tilleuls.coop/) in Nantes. I love building interfaces, most of them about culture and cinema.
-
-<p align="center"><b>NOW SHOWING</b></p>
-
 <p align="center">
-  <a href="https://github.com/thcolin/sensorr"><img src="images/poster-sensorr.jpg" width="32%" alt="sensorr, your friendly Digital Video Recorder. Think VCR, but in modern times." /></a>
-  <a href="https://github.com/thcolin/gamepad-media-center-aggregator"><img src="images/poster-gmca.jpg" width="32%" alt="GMCA, Gamepad Media Center Aggregator. Runs Plex on your Switch." /></a>
-  <a href="https://github.com/thcolin/oleoo"><img src="images/poster-oleoo.jpg" width="32%" alt="oleoo, Scene/P2P/Warez release name parser." /></a>
+  <a href="https://thcol.in"><img src="images/head.png" width="100%" alt="thcolin@thcol.in: Thomas Colin, Product Engineer at Les-Tilleuls.coop, Nantes" /></a>
 </p>
 
-<p align="center"><b>COMING SOON</b></p>
+<img src="images/prompt-about.png" width="100%" alt="thcolin@thcol.in ~ $ cat about.md" />
 
 <p align="center">
-  <a href="https://thcol.in/#cinetropes"><img src="images/poster-cinetropes.jpg" width="24%" alt="cinetropes, explore, discover, find. Coming soon." /></a>
-  <a href="https://thcol.in/#teevy"><img src="images/poster-teevy.jpg" width="24%" alt="teevy, a Mac drives a real CRT as a television. Not for release." /></a>
+  Product engineer at <a href="https://les-tilleuls.coop/">Les-Tilleuls.coop</a>, in Nantes.<br />
+  I design and build interfaces, from the first sketch to the shipped screen.
+</p>
+<p align="center">
+  On my own time, I turn what I use every day into products:<br />
+  my TV, my media server, my rack, and a game about films.
+</p>
+<p align="center">
+  Mostly, I watch films. Half of what follows exists because of them.
 </p>
 
-<p align="center">More on <a href="https://thcol.in">thcol.in</a> · <a href="mailto:me@thcol.in">me@thcol.in</a></p>
+<br />
+
+<img src="images/prompt-projects.png" width="100%" alt="thcolin@thcol.in ~ $ ls projects/" />
+
+<p align="center">
+  <img src="images/retro.webp" width="100%" alt="teevy on a CRT, zapping from its test card to Kanshi; the cinetropes meta-game on a Game Boy Color; GMCA on a Switch" />
+</p>
+
+<br />
+
+<p align="center">
+  <a href="https://thcol.in/#teevy"><b>teevy</b></a><br />
+  <sub>My Mac drives a real CRT. Every source becomes a channel, zapped in a 90s on-screen display.</sub>
+</p>
+<p align="center">
+  <a href="https://thcol.in/#cinetropes-meta-game"><b>cinetropes meta-game</b></a><br />
+  <sub>Restore an abandoned cinema, welcome its audience and program its rooms. The game is in French.</sub>
+</p>
+<p align="center">
+  <a href="https://github.com/thcolin/gamepad-media-center-aggregator"><b>GMCA</b></a><br />
+  <sub>One native, controller-first client for any media center, on any device you left in a drawer.</sub>
+</p>
+
+<br />
+
+<p align="center">
+  <a href="https://thcol.in/#cinetropes-daily"><img src="images/daily.webp" width="100%" alt="cinetropes daily: guess the movie from its ratings, its atmosphere and its tropes; yesterday's movie revealed underneath" /></a>
+</p>
+
+<br />
+
+<p align="center">
+  <a href="https://thcol.in/#cinetropes-daily"><b>cinetropes daily</b></a><br />
+  <sub>Guess the movie from its tropes, its atmosphere and its ratings. Six attempts.</sub>
+</p>
+
+<br />
+
+<p align="center">
+  <img src="images/sensorr.webp" width="100%" alt="sensorr's interface, and a sensorr wrapped on a phone" />
+</p>
+
+<br />
+
+<p align="center">
+  <a href="https://github.com/thcolin/sensorr"><b>sensorr</b></a><br />
+  <sub>Your Friendly Digital Video Recorder. Think VCR, but in modern times.</sub>
+</p>
+<p align="center">
+  <a href="https://github.com/thcolin/sensorr/tree/main/apps/wrapped"><b>sensorr wrapped</b></a><br />
+  <sub>A wrapped for every friend, every year, from Tautulli's watch history.</sub>
+</p>
+
+<br />
+
+<img src="images/prompt-3d.png" width="100%" alt="thcolin@thcol.in ~ $ ls 3d-prints/" />
+
+<p align="center">
+  <img src="images/printing.webp" width="100%" alt="top-fan and nas, two 3D printed parts for a rack, turning and exploding" />
+</p>
+
+<br />
+
+<p align="center">
+  <a href="https://thcol.in/#top-fan"><b>top-fan</b></a> · <a href="https://thcol.in/#nas"><b>nas</b></a><br />
+  <sub>Parametric, modular parts around one rack: the extraction plate with four 120 mm fans, and a 2U block for eight 3.5" drives.</sub>
+</p>
+
+<br />
+
+<p align="center">Every project, with its demo, on <a href="https://thcol.in">thcol.in</a></p>

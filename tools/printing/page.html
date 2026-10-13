@@ -1,0 +1,187 @@
+<!doctype html>
+<html>
+<head>
+<style>html, body { margin: 0; background: #090a0c; } canvas { display: block; width: 640px; height: 640px; }</style>
+<script type="importmap">{ "imports": { "three": "/three/build/three.module.js", "three/addons/": "/three/examples/jsm/" } }</script>
+</head>
+<body>
+<script type="module">
+import * as THREE from 'three'
+import { STLLoader } from 'three/addons/loaders/STLLoader.js'
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js'
+
+const SIZE = 640
+const ease = (t) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2)
+const clamp01 = (t) => Math.min(Math.max(t, 0), 1)
+
+window.setup = async ({ piece, parts, color, hardware, elevation, azimuth, turn, sway, fit, frames, timeline }) => {
+  const renderer = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true })
+  renderer.setPixelRatio(2) // drawn at 1280, shown at 640: supersampled
+  renderer.setSize(SIZE, SIZE)
+  renderer.setClearColor('#090a0c')
+  renderer.toneMapping = THREE.NeutralToneMapping
+  renderer.shadowMap.enabled = true
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap
+  document.body.append(renderer.domElement)
+
+  const scene = new THREE.Scene()
+  const pmrem = new THREE.PMREMGenerator(renderer)
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture
+  scene.environmentIntensity = 0.22
+
+  // Source coordinates are OpenSCAD's: Z up
+  THREE.Object3D.DEFAULT_UP.set(0, 0, 1)
+  const turntable = new THREE.Group()
+  scene.add(turntable)
+
+  const printed = new THREE.MeshStandardMaterial({ color, roughness: 0.78, metalness: 0, flatShading: true })
+  const other = new THREE.MeshStandardMaterial({ color: hardware, roughness: 0.6, metalness: 0.1, flatShading: true })
+  const edgeColor = new THREE.Color(color).multiplyScalar(0.28)
+  const edges = new THREE.LineBasicMaterial({ color: edgeColor, transparent: true, opacity: 0.85 })
+  const otherEdges = new THREE.LineBasicMaterial({ color: '#000000', transparent: true, opacity: 0.6 })
+
+  const loader = new STLLoader()
+  const items = await Promise.all(parts.map(async (part) => {
+    const geometry = await loader.loadAsync(`/stl/${piece}/${part.file}.stl`)
+    geometry.computeBoundingBox()
+    const mesh = new THREE.Mesh(geometry, part.hardware ? other : printed)
+    mesh.castShadow = mesh.receiveShadow = true
+    const lines = new THREE.LineSegments(new THREE.EdgesGeometry(geometry, 28), part.hardware ? otherEdges : edges)
+    const group = new THREE.Group().add(mesh, lines)
+    turntable.add(group)
+    return { group, box: geometry.boundingBox, offset: new THREE.Vector3(...part.offset), delay: part.delay || 0 }
+  }))
+
+  // Turn around the centre of the assembled piece
+  const assembled = new THREE.Box3()
+  items.forEach(({ box }) => assembled.union(box))
+  const pivot = assembled.getCenter(new THREE.Vector3())
+
+  const camera = new THREE.PerspectiveCamera(26, 1, 1, 20000)
+  const dir = new THREE.Vector3().setFromSphericalCoords(1, THREE.MathUtils.degToRad(90 - elevation), 0)
+  // setFromSphericalCoords is Y up: swap to Z up, camera looks from -Y (the front) rotated by azimuth
+  const view = new THREE.Vector3(dir.x, -dir.z, dir.y).applyAxisAngle(new THREE.Vector3(0, 0, 1), THREE.MathUtils.degToRad(azimuth))
+
+  const place = (u, still = false) => {
+    const { explode: [e0, e1], collapse: [c0, c1] } = timeline
+    items.forEach((item) => {
+      const span = (e1 - e0)
+      const out = ease(clamp01((u - e0 - item.delay * span) / (span * 0.75)))
+      const back = ease(clamp01((u - c0 - (0.25 - item.delay) * (c1 - c0)) / ((c1 - c0) * 0.75)))
+      item.group.position.copy(item.offset).multiplyScalar(still ? 0 : out * (1 - back))
+    })
+    turntable.position.copy(pivot).negate()
+    turntable.rotation.set(0, 0, 0)
+    const spin = new THREE.Matrix4().makeRotationZ(THREE.MathUtils.degToRad(sway ? sway * Math.sin(2 * Math.PI * u) : turn * u))
+    turntable.matrixAutoUpdate = false
+    turntable.matrix.copy(spin).multiply(new THREE.Matrix4().makeTranslation(-pivot.x, -pivot.y, -pivot.z))
+    turntable.updateMatrixWorld(true)
+  }
+
+  // Without `fit`: one fixed camera, every part's box over the whole loop inside 90 % of the frame.
+  // With `fit`: the camera dollies with the explode, measured on the mesh vertices. Assembled, the
+  // piece spans fit.assembled of the width; exploded, nothing passes fit.all.
+  const samples = items.map(({ group, box }) => {
+    if (!fit) {
+      return Array.from({ length: 8 }, (_, i) => new THREE.Vector3(i & 1 ? box.max.x : box.min.x, i & 2 ? box.max.y : box.min.y, i & 4 ? box.max.z : box.min.z))
+    }
+    const position = group.children[0].geometry.attributes.position
+    const stride = Math.max(1, Math.floor(position.count / 6000))
+    const points = []
+    for (let i = 0; i < position.count; i += stride) points.push(new THREE.Vector3().fromBufferAttribute(position, i))
+    return points
+  })
+  const collect = (still) => {
+    const points = []
+    for (let f = 0; f < frames; f += 2) {
+      place(f / frames, still)
+      items.forEach(({ group }, i) => samples[i].forEach((p) => points.push(p.clone().applyMatrix4(group.matrixWorld))))
+    }
+    return points
+  }
+  const corners = collect(false)
+  const hull = new THREE.Box3().setFromPoints(corners)
+  const target = hull.getCenter(new THREE.Vector3())
+  const aimAt = (distance, shift) => {
+    camera.position.copy(target).add(shift).addScaledVector(view, distance)
+    camera.lookAt(target.clone().add(shift))
+    camera.updateMatrixWorld()
+    camera.updateProjectionMatrix()
+  }
+  const bounds = (points) => {
+    let [x0, x1, y0, y1] = [1, -1, 1, -1]
+    points.forEach((c) => {
+      const p = c.clone().project(camera)
+      x0 = Math.min(x0, p.x); x1 = Math.max(x1, p.x); y0 = Math.min(y0, p.y); y1 = Math.max(y1, p.y)
+    })
+    return { x0, x1, y0, y1 }
+  }
+  // Closest camera that still passes `ok`, recentred on what is actually drawn
+  const solve = (points, ok) => {
+    let lo = 10, hi = 20000
+    const shift = new THREE.Vector3()
+    for (let k = 0; k < 40; k++) {
+      const mid = (lo + hi) / 2
+      aimAt(mid, shift)
+      const b = bounds(points)
+      const right = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 0)
+      const up = new THREE.Vector3().setFromMatrixColumn(camera.matrixWorld, 1)
+      const half = mid * Math.tan(THREE.MathUtils.degToRad(13))
+      shift.addScaledVector(right, ((b.x0 + b.x1) / 2) * half).addScaledVector(up, ((b.y0 + b.y1) / 2) * half)
+      aimAt(mid, shift)
+      if (ok(bounds(points))) hi = mid
+      else lo = mid
+    }
+    return { distance: hi, shift }
+  }
+  const edge = (b) => Math.max(-b.x0, b.x1, -b.y0, b.y1)
+  const loose = solve(corners, (b) => Math.max(b.x1 - b.x0, b.y1 - b.y0) / 2 <= (fit ? fit.all : 0.9))
+  const tight = fit ? solve(collect(true), (b) => (b.x1 - b.x0) / 2 <= fit.assembled && edge(b) <= fit.all) : loose
+  // How far the camera has pulled back: follows the first part out and the last one home
+  const pull = (u) => {
+    const { explode: [e0, e1], collapse: [c0, c1] } = timeline
+    return ease(clamp01((u - e0) / ((e1 - e0) * 0.75))) * (1 - ease(clamp01((u - c0 - 0.25 * (c1 - c0)) / ((c1 - c0) * 0.75))))
+  }
+  const frame = (u) => aimAt(
+    THREE.MathUtils.lerp(tight.distance, loose.distance, pull(u)),
+    tight.shift.clone().lerp(loose.shift, pull(u)),
+  )
+  frame(0)
+  const hi = loose.distance
+  const radius = hull.getBoundingSphere(new THREE.Sphere()).radius
+
+  // Studio rig: key from upper left, rim from behind right, both fixed to the camera
+  scene.add(camera)
+  const aim = new THREE.Object3D()
+  aim.position.copy(target)
+  scene.add(aim)
+  const key = new THREE.DirectionalLight(0xfff4e8, 1.7)
+  key.position.set(-radius * 1.4, radius * 2.2, radius * 0.6)
+  key.target = aim
+  key.castShadow = true
+  key.shadow.mapSize.set(2048, 2048)
+  Object.assign(key.shadow.camera, { left: -radius, right: radius, top: radius, bottom: -radius, near: radius * 0.1, far: radius * 8 })
+  key.shadow.bias = -0.0005
+  key.shadow.normalBias = radius * 0.002
+  camera.add(key)
+  const rim = new THREE.DirectionalLight(0xdfe8ff, 2.2)
+  rim.position.set(radius * 1.8, radius * 1.0, -hi * 1.4)
+  rim.target = aim
+  camera.add(rim)
+  const fill = new THREE.DirectionalLight(0xffffff, 0.35)
+  fill.position.set(radius * 1.5, -radius * 0.3, radius)
+  fill.target = aim
+  camera.add(fill)
+  scene.add(new THREE.HemisphereLight(0xffffff, 0x202020, 0.2))
+
+  window.renderAt = (u) => {
+    place(u)
+    frame(u)
+    renderer.render(scene, camera)
+  }
+  return true
+}
+window.ready = true
+</script>
+</body>
+</html>

@@ -1,0 +1,221 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>Profil GitHub v4</title>
+<style>
+  /* The artifact page: Thomas's iTerm2 profile, background #090a0c, ANSI 16 */
+  :root {
+    --bg: #090a0c;
+    --page: #121315;
+    --fg: #ffffff;
+    --dim: #666666;
+    --yellow: #eefc7a;
+    --cyan: #69ecff;
+    --mono: Menlo, 'DejaVu Sans Mono', ui-monospace, monospace;
+    --gh-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+    color-scheme: dark;
+  }
+  * { box-sizing: border-box }
+  body { margin: 0; background: var(--page); color: var(--fg); font: 14px/1.6 var(--mono); padding: 40px 16px 80px }
+  .wrap { max-width: 900px; margin: 0 auto; display: grid; gap: 28px }
+  h1 { margin: 0; font: 700 28px/1.2 var(--mono) }
+  h1 span { color: var(--yellow) }
+  header p { margin: 8px 0 0; color: #a0a0a0; max-width: 70ch }
+  .caption { font: 12px var(--mono); color: var(--dim); margin: 0 0 10px }
+  .scroller { overflow-x: auto }
+  .switch { display: flex; gap: 8px; align-items: center }
+  .switch button { font: 13px var(--mono); color: var(--fg); background: transparent; border: 1px solid #3a3d42; border-radius: 4px; padding: 6px 12px; cursor: pointer }
+  .switch button[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg) }
+  .switch button:focus-visible { outline: 2px solid var(--cyan); outline-offset: 2px }
+
+  /* The README column, GitHub dark */
+  .gh { width: 880px; background: #0d1117; border: 1px solid #30363d; border-radius: 6px }
+  .gh__bar { font: 12px var(--mono); color: #8d96a0; padding: 8px 16px; border-bottom: 1px solid #30363d }
+  .gh__body { padding: 24px; display: grid; gap: 56px }
+  .row { display: grid; gap: 40px }
+  .img { position: relative; width: 830px }
+  body.show-bounds .img { outline: 1px dashed #eefc7a88 }
+
+  /* GitHub markdown, the line under each row */
+  .md { margin: 0; font: 16px/1.5 var(--gh-sans); color: #e6edf3; display: grid; gap: 16px }
+  .md p { margin: 0; text-align: center }
+  .md sub { font-size: 75%; vertical-align: baseline }
+  .prompt { display: block; margin-bottom: -32px }
+  .about { display: grid; gap: 4px }
+  .md a { color: #4493f8; text-decoration: none }
+
+  /* Header A, fastfetch palette */
+  .card { width: 830px; display: flex; gap: 40px; align-items: center; padding: 36px 40px; background: var(--bg); border-radius: 10px; font: 13px/1.6 var(--mono); color: #fff }
+  .card .info b { font-weight: 700 }
+  .blocks { display: flex } .blocks i { width: 24px; height: 16px }
+
+  /* Retro row: the CRT on the left, the Game Boy to the right, gmca underneath between them */
+  /* Pyramid: the CRT on the axis, gmca in front on the left, the Game Boy against its right flank */
+  .retro { height: 610px }
+  .retro .crt { position: absolute; left: 190px; top: 0; width: 450px }
+  .retro .gbc { position: absolute; left: 585px; top: 240px; width: 210px; transform: rotate(8deg); filter: drop-shadow(0 24px 24px #000c) }
+  .gbc img.shell { display: block; width: 100% }
+  .gbc .lcd { position: absolute; left: 21.4%; top: 8.6%; width: 57.2%; height: 30.33%; background: #1f2022 }
+  .gbc .lcd img { width: 100%; height: 100%; display: block; image-rendering: pixelated }
+  .retro .gmca { position: absolute; left: 10px; bottom: 0; width: 510px; filter: drop-shadow(0 22px 28px #000c) }
+
+  /* Daily */
+  .daily img { display: block }
+  .daily .tag { font: 12px var(--mono); color: #666666 }
+  /* Today: the three clue cards across the whole width, the holo poster laid over their left side, tilted */
+  .daily .stage { position: relative; height: 712px }
+  .daily .stage .clues { position: absolute; left: 0; right: 0; top: 307px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px }
+  .daily .stage .clue { width: 100%; clip-path: inset(2px round 18px) }
+  .daily .stage .poster { position: absolute; left: -6px; top: 80px; width: 185px; transform: rotate(-8deg); filter: drop-shadow(0 22px 26px #000d); z-index: 2 }
+  .daily .stage .head { position: absolute; left: 0; right: 0; top: 4px; display: grid; justify-items: center; gap: 16px }
+  .daily .play { display: block; width: 160px; margin: 22px auto 0; border-radius: 8px }
+
+  /* Yesterday reduced to its reveal, with its charts on the right */
+  .daily .yesterday-title { display: block; width: 242px; margin: 18px auto -2px }
+  .daily .yesterday { display: flex; align-items: center; gap: 28px; padding: 22px 16px; border: 1px solid #ffffff14; border-radius: 14px }
+  .daily .yesterday .info { display: grid; gap: 8px; justify-items: start }
+  .daily .yesterday .info img:first-child, .stage .head .riddle { margin-bottom: 8px }
+  .daily .stage .head .film { display: grid; justify-items: center; gap: 8px }
+  .daily .yesterday .glyphs { margin-left: auto; display: flex; align-items: center; gap: 28px; padding-right: 8px }
+  .daily .yesterday .glyphs img { width: 64px; height: 64px; object-fit: contain }
+  .printing { margin-top: 0 }
+
+  /* sensorr row */
+  .sensorr { height: 480px }
+  .sensorr .shot { position: absolute; left: 40px; top: 40px; width: 580px; border-radius: 10px; transform: rotate(-2.5deg); box-shadow: 0 0 0 1px #ffffff1a, 0 30px 50px #000c }
+  .sensorr .phone { position: absolute; left: 560px; top: 44px; width: 210px; transform: rotate(3deg) }
+
+  /* 3d printing */
+  .printing { height: 330px; display: flex; justify-content: space-around }
+  .printing img { width: 330px; border-radius: 12px }
+
+  .links { text-align: center; color: #8d96a0; font: 14px var(--gh-sans) }
+  .links a { color: #4493f8; text-decoration: none }
+
+  .phone-frame { width: 390px; max-width: 100%; border: 1px solid #30363d; border-radius: 6px; background: #0d1117; overflow: hidden }
+  .phone-frame .inner { transform-origin: 0 0; width: 880px }
+
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: 0s !important; animation-iteration-count: 1 !important } }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1><span>thcolin</span>/README.md · v4</h1>
+    <p>Maquette à taille réelle, colonne de 830 px. Chaque bloc correspond à une image du README. Les invites de terminal sont des SVG. Les textes sont du markdown centré, en &lt;sub&gt;. L'about me est un brouillon à corriger.</p>
+  </header>
+  <div class="switch"><button type="button" id="bounds" aria-pressed="false">Contours des images</button></div>
+
+  <section>
+    <p class="caption">Desktop · colonne de 830 px</p>
+    <div class="scroller">
+      <div class="gh" id="readme">
+        <div class="gh__bar">thcolin / README.md</div>
+        <div class="gh__body">
+
+          <div class="img head">{{HEAD}}</div>
+
+          <img class="prompt" src="img/prompt-about.svg" alt="thcolin@thcol.in ~ $ cat about.md">
+          <div class="md about">
+            <p>Product engineer at <a href="https://les-tilleuls.coop/">Les-Tilleuls.coop</a>, in Nantes.<br>I design and build interfaces, from the first sketch to the shipped screen.</p>
+            <p>On my own time, I turn what I use every day into products:<br>my TV, my media server, my rack, and a game about films.</p>
+            <p>Mostly, I watch films. Half of what follows exists because of them.</p>
+          </div>
+
+          <img class="prompt" src="img/prompt-projects.svg" alt="thcolin@thcol.in ~ $ ls projects/">
+          <div class="row">
+            <div class="img retro">
+              <img class="crt" src="img/teevy-crt.webp" alt="teevy">
+              <img class="gmca" src="img/gmca.webp" alt="gmca">
+              <div class="gbc">
+                <img class="shell" src="img/gbc.png" alt="">
+                <div class="lcd"><img src="img/metagame.webp" alt="cinetropes meta-game"></div>
+              </div>
+            </div>
+            <div class="md">
+              <p><a href="https://thcol.in/#teevy"><b>teevy</b></a><br><sub>My Mac drives a real CRT. Every source becomes a channel, zapped in a 90s on-screen display.</sub></p>
+              <p><a href="https://thcol.in/#cinetropes-meta-game"><b>cinetropes meta-game</b></a><br><sub>Restore an abandoned cinema, welcome its audience and program its rooms. The game is in French.</sub></p>
+              <p><a href="https://github.com/thcolin/gamepad-media-center-aggregator"><b>GMCA</b></a><br><sub>One native, controller-first client for any media center, on any device you left in a drawer.</sub></p>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="img daily">
+      <div class="stage">
+        <img class="poster" src="img/daily/holo.webp" alt="">
+        <div class="head">
+          <img src="img/daily/logo.png" style="width:220px" alt="cinetropes #195">
+          <img src="img/daily/hero-guess.png" style="width:310px; margin:-24px 0" alt="Guess the Movie">
+          <div class="film"><img class="riddle" src="img/daily/title.png" style="width:190px" alt=""><img src="img/daily/meta.png" style="width:292px" alt=""></div>
+        </div>
+        <div class="clues">
+          <img class="clue" src="img/daily/clue-0-195.png" alt="Notation">
+          <img class="clue" src="img/daily/clue-1-195.png" alt="Atmosphère">
+          <img class="clue" src="img/daily/clue-2-195.png" alt="Tropes">
+        </div>
+      </div>
+      <img class="play" src="img/daily/play.png" alt="Play">
+      <img class="yesterday-title" src="img/daily/hero-yesterday.png" alt="Yesterday · #190">
+      <div class="yesterday">
+        <img src="img/daily/card-reveal.png" style="width:72px" alt="">
+        <div class="info">
+          <img src="img/daily/reveal-title.png" style="width:86px" alt="Nikita">
+          <img src="img/daily/reveal-meta.png" style="width:214px" alt="">
+          <img src="img/daily/reveal-director.png" style="width:144px" alt="">
+        </div>
+        <div class="glyphs"><img src="img/daily/glyph-reception-190.png" alt=""><img src="img/daily/glyph-atmosphere-190.png" alt=""><img src="img/daily/glyph-tropes-190.png" alt=""></div>
+      </div>
+            </div>
+            <div class="md">
+              <p><a href="https://thcol.in/#cinetropes-daily"><b>cinetropes daily</b></a><br><sub>Guess the movie from its tropes, its atmosphere and its ratings. Six attempts.</sub></p>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="img sensorr">
+              <img class="shot" src="img/sensorr.webp" alt="sensorr">
+              <img class="phone" src="img/wrapped-phone.webp" alt="sensorr wrapped">
+            </div>
+            <div class="md">
+              <p><a href="https://github.com/thcolin/sensorr"><b>sensorr</b></a><br><sub>Your Friendly Digital Video Recorder. Think VCR, but in modern times.</sub></p>
+              <p><a href="https://github.com/thcolin/sensorr/tree/main/apps/wrapped"><b>sensorr wrapped</b></a><br><sub>A wrapped for every friend, every year, from Tautulli's watch history.</sub></p>
+            </div>
+          </div>
+
+          <img class="prompt" src="img/prompt-3d.svg" alt="thcolin@thcol.in ~ $ ls 3d-prints/">
+          <div class="row">
+            <div class="img printing">
+              <img src="img/top-fan.webp" alt="top-fan">
+              <img src="img/nas.webp" alt="nas">
+            </div>
+            <div class="md">
+              <p><a href="https://thcol.in/#top-fan"><b>top-fan</b></a> · <a href="https://thcol.in/#nas"><b>nas</b></a><br><sub>Parametric, modular parts around one rack: the extraction plate with four 120 mm fans, and a 2U block for eight 3.5" drives.</sub></p>
+            </div>
+          </div>
+
+          <p class="links">Every project, with its demo, on <a href="https://thcol.in">thcol.in</a></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <p class="caption">Mobile · colonne de 358 px</p>
+    <div class="phone-frame"><div class="inner" id="phone"></div></div>
+  </section>
+</div>
+
+<script>
+  const readme = document.getElementById('readme')
+  const phone = document.getElementById('phone')
+  const syncPhone = () => {
+    const clone = readme.cloneNode(true)
+    clone.removeAttribute('id')
+    phone.replaceChildren(clone)
+    phone.style.transform = `scale(${388 / 880})`
+    phone.parentElement.style.height = `${readme.offsetHeight * 388 / 880}px`
+  }
+  document.getElementById('bounds').addEventListener('click', (event) => {
+    const on = document.body.classList.toggle('show-bounds')
+    event.currentTarget.setAttribute('aria-pressed', String(on))
+  })
+  addEventListener('load', syncPhone)
+</script>
