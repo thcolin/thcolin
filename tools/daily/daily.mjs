@@ -214,7 +214,7 @@ const today = async () => {
   await fresh.mouse.move(0, 0)
   const play = fresh.locator('article.cd').getByRole('button', { name: 'Play' })
   await play.evaluate((b) => { b.dataset.readme = 'play' })
-  await heroTitle(fresh, ['Guess', 'the Movie'], `${WORK}hero-guess.png`)
+  await heroTitle(fresh, ['Guess', 'the Film of the Day'], `${WORK}hero-guess.png`)
   await fresh.evaluate(() => {
     document.querySelector('.cd__hero-title').style.visibility = 'hidden'
     document.querySelector('[data-readme="play"]').style.visibility = 'visible'
