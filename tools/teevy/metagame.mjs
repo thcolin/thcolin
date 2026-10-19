@@ -26,7 +26,7 @@ await page.addInitScript(({ facadeId, t }) => {
 }, { facadeId: FACADE, t: NOW.getTime() })
 await page.clock.install({ time: NOW })
 await page.clock.pauseAt(new Date(NOW.getTime() + 500))
-await page.goto(`https://beta.cinetropes.com/play?embed&facade=${FACADE}`)
+await page.goto(`https://daily.cinetropes.com/play?embed&facade=${FACADE}`)
 
 const tick = async (ms) => { await page.clock.runFor(ms); await page.waitForTimeout(15) }
 // Boot: the clock moves in small steps while assets come in for real

@@ -48,7 +48,7 @@ jobs:
 
       - id: yesterday
         if: env.MODE == 'today'
-        run: echo "day=$(curl -s https://beta.cinetropes.com/api/daily | node -pe "JSON.parse(require('fs').readFileSync(0)).gameDay - 1")" >> "$GITHUB_OUTPUT"
+        run: echo "day=$(curl -s https://daily.cinetropes.com/api/daily | node -pe "JSON.parse(require('fs').readFileSync(0)).gameDay - 1")" >> "$GITHUB_OUTPUT"
 
       - uses: actions/cache/restore@v4
         if: env.MODE == 'today'
@@ -77,6 +77,6 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add ../../images/daily.webp
           git diff --cached --quiet && exit 0
-          day=$(curl -s https://beta.cinetropes.com/api/daily | node -pe "JSON.parse(require('fs').readFileSync(0)).gameDay")
+          day=$(curl -s https://daily.cinetropes.com/api/daily | node -pe "JSON.parse(require('fs').readFileSync(0)).gameDay")
           git commit -m "chore(profile): draw cinetropes daily #$day"
           git push

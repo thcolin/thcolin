@@ -1,4 +1,4 @@
-// The README's daily row, from the live band on thcol.in and the film page on beta.cinetropes.com.
+// The README's daily row, from the live band on thcol.in and the daily's API on daily.cinetropes.com.
 //
 //   node daily.mjs reveal   before the day ends (UTC): today's answer, as the band reveals it, kept in state/
 //   node daily.mjs today    once the day has turned: today's riddle, yesterday's answer from state/, images/daily.webp
@@ -13,8 +13,7 @@ const WORK = `${HERE}work/`
 const STATE = `${HERE}state/`
 const OUTPUT = `${HERE}../../images/daily.webp`
 const SITE = process.env.SITE ?? 'https://thcol.in'
-const API = 'https://beta.cinetropes.com/api'
-const BETA = 'https://beta.cinetropes.com'
+const API = 'https://daily.cinetropes.com/api'
 const HOLO_FRAMES = 60
 const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -24,24 +23,6 @@ const TRANSPARENT = `
   .cd__backdrop, .cd__confetti { display: none !important; }
   .cd__hero-title, .cd__hero-title * { animation: none !important; opacity: 1 !important; transform: none !important; filter: none !important; }
 `
-
-// The beta speaks French only. Atmosphere's moods translate through the two apps' own tables, level by level
-// (cinetropes: atmosphere-constants.ts ATMOSPHERE_ADAPTED_LABELS; thcol.in: cinetropes-radars.jsx EMOTIONS);
-// Reception's verdicts come from the band's popin for the same film, the band having three levels to the beta's seven
-const AXES = { Notation: 'Reception', 'Atmosphère': 'Atmosphere', Ton: 'Tone', Rythme: 'Pace', Esprit: 'Spirit', 'Sensibilité': 'Sensitivity', Ambiance: 'Ambience' }
-const MOODS = [
-  [['Sinistre', 'Triste', 'Mélancolique', 'Neutre', 'Positif', 'Enthousiasmant', 'Solaire'], ['Grim', 'Sad', 'Melancholic', 'Neutral', 'Upbeat', 'Uplifting', 'Radiant']],
-  [['Immobile', 'Contemplatif', 'Cadencé', 'Captivant', 'Entraînant', 'Intense', 'Haletant'], ['Still', 'Contemplative', 'Measured', 'Gripping', 'Rousing', 'Intense', 'Breathless']],
-  [['Chaleureux', 'Harmonieux', 'Bienveillant', 'Révoltant', 'Indigné', 'Percutant', 'Rageur'], ['Warm', 'Harmonious', 'Kind', 'Outrageous', 'Indignant', 'Hard-hitting', 'Furious']],
-  [['Sublimé', 'Épuré', 'Lisse', 'Dérangeant', 'Viscéral', 'Macabre', 'Répugnant'], ['Sublimated', 'Pared-back', 'Smooth', 'Disturbing', 'Visceral', 'Macabre', 'Repulsive']],
-  [['Jovial', 'Léger', 'Distrayant', 'Touchant', 'Émouvant', 'Poignant', 'Déchirant'], ['Jovial', 'Light', 'Diverting', 'Touching', 'Moving', 'Poignant', 'Heartbreaking']],
-  [['Paisible', 'Calme', 'Détendu', 'Angoissant', 'Tendu', 'Effrayant', 'Terrifiant'], ['Peaceful', 'Calm', 'Relaxed', 'Unsettling', 'Tense', 'Frightening', 'Terrifying']],
-  [['Oppressant', 'Inquiétant', 'Suspect', 'Intrigant', 'Sûr', 'Rassurant', 'Réconfortant'], ['Oppressive', 'Disquieting', 'Suspicious', 'Intriguing', 'Safe', 'Reassuring', 'Comforting']],
-  [['Linéaire', 'Attendu', 'Prévisible', 'Inattendu', 'Surprenant', 'Déroutant', 'Sidérant'], ['Linear', 'Expected', 'Predictable', 'Unexpected', 'Surprising', 'Disorienting', 'Stunning']],
-]
-const ENGLISH = { ...AXES, ...Object.fromEntries(MOODS.flatMap(([fr, en]) => fr.map((word, i) => [word, en[i]]))) }
-// cinetropes: notation-constants.ts NOTATION_ADAPTED_LABELS and NOTATION_IMPACT_LABELS
-const VERDICTS = new Set(['Assassiné', 'Descendu', 'Boudé', 'Estimé', 'Salué', 'Acclamé', 'Triomphe', 'Détesté', 'Oublié', 'Ignoré', 'Apprécié', 'Validé', 'Populaire', 'Adoré', 'Méprisé', 'Méconnu', 'Conventionnel', 'Reconnu', 'Défendu', 'Culte', 'Intouchable'])
 
 const api = async (path) => {
   const res = await fetch(`${API}${path}`, { headers: { 'Accept-Language': 'en' } })
@@ -136,66 +117,46 @@ const reveal = async () => {
   console.log('kept the reveal of daily', gameDay)
 }
 
-// One section of the beta's card back per card: the chart centred on top, its values under it, zoomed as far as the
-// card's height allows, in English
-const clueCards = async (browser, slug, verdicts) => {
-  const page = await browser.newPage({ viewport: { width: 1440, height: 1100 }, deviceScaleFactor: 2 })
-  await page.goto(`${BETA}/film/${slug}`, { waitUntil: 'networkidle' })
-  await sleep(1000)
-  await page.mouse.click(340, 540)
-  await sleep(2500)
-  await page.mouse.click(720, 987)
-  await sleep(2500)
-  await page.evaluate(([english, verdicts, known]) => {
-    const content = document.querySelector('.card__back-content')
-    const walker = document.createTreeWalker(content, NodeFilter.SHOW_TEXT)
-    let v = 0
-    for (let n = walker.nextNode(); n; n = walker.nextNode()) {
-      const word = n.nodeValue.trim().replace(/^["“«\s]+|["”»\s]+$/g, '')
-      if (known.includes(word) && verdicts[v]) n.nodeValue = n.nodeValue.replace(word, verdicts[v++])
-      else if (english[word]) n.nodeValue = n.nodeValue.replace(word, english[word])
-    }
-  }, [ENGLISH, verdicts, [...VERDICTS]])
-  const clip = await page.evaluate(() => {
-    const r = document.querySelector('.card__back-content-overlay').getBoundingClientRect()
-    return { x: r.x - 47, y: r.y - 36, width: r.width + 94, height: r.height + 72 }
-  })
+// One section of the band's card back per card, Reception, Atmosphere then Tropes: the band shows it once the game is
+// over. Each on the clue cards' own frame, zoomed as far as the card's height allows
+const clueCards = async (browser) => {
+  const { page, band } = await openBand(browser, 6)
+  await sleep(3000)
+  await band.locator('.cd__card[role=button]').click()
+  await page.locator('.cd__zoom-sheet .cd__sheet-section').first().waitFor()
+  await page.mouse.move(0, 0)
+  await sleep(1500)
+  await page.addStyleTag({ content: `
+    .cd__zoom-card { left: 40px !important; top: 40px !important; width: 514px !important; height: 772px !important; transform: none !important; }
+    .cd__zoom-rotator, .cinetropes__close { visibility: hidden !important; }
+    .cd__zoom-sheet { inset: 0; padding: 48px 40px; border-radius: 22px; background: #0a0a0a; box-shadow: inset 0 0 0 16px #0a0a0a, inset 0 0 0 32px #0f0f0f; }
+    .cd__zoom-sheet, .cd__zoom-sheet * { animation: none !important; }
+    .cd__sheet-section h4 { text-align: center; }
+    /* The chart centred on top, its values under it; Atmosphere's eight axes on two columns; the tropes closed, their first four */
+    .cd__zoom-sheet .cinetropes__legend { grid-template-columns: minmax(0, 1fr); justify-items: center; gap: 14px; }
+    .cd__zoom-sheet .cinetropes__legend .cinetropes__glyph { width: 140px; }
+    .cd__zoom-sheet .cinetropes__legend-body { width: 100%; }
+    .cd__zoom-sheet .cinetropes__tip-rows:has(> :nth-child(8)) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 16px; }
+    .cd__zoom-sheet .cinetropes__tip-rows:has(> :nth-child(8)) li { flex-wrap: wrap; row-gap: 4px; }
+    .cd__zoom-sheet .cinetropes__tip-rows:has(> :nth-child(8)) .cinetropes__bar { order: 1; flex-basis: calc(100% - 16px); margin-left: 16px; }
+    .cd__zoom-sheet .cinetropes__trope-body, .cd__zoom-sheet .cinetropes__tropes > :nth-child(n + 5) { display: none !important; }
+  ` })
+  const clip = { x: 40, y: 40, width: 514, height: 772 }
   for (let i = 0; i < 3; i++) {
     await page.evaluate((i) => {
-      const content = document.querySelector('.card__back-content')
-      const sections = [...content.querySelectorAll('.card__back-section')]
-      ;[...content.children].forEach((el) => { el.style.display = el.contains(sections[i]) || el === sections[i] ? '' : 'none' })
-      sections.forEach((s, k) => { s.style.display = k === i ? '' : 'none' })
-      const row = sections[i].children[1]
-      Object.assign(row.style, { flexDirection: 'column', alignItems: 'center', gap: '14px' })
-      const list = row.lastElementChild
-      list.style.width = '100%'
-      // Atmosphere's eight axes on two columns, each axis on two lines, its name then its bar
-      if (list.children.length === 8) {
-        Object.assign(list.style, { display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', columnGap: '2px' })
-        list.querySelectorAll('*').forEach((el) => { el.style.minWidth = '0' })
-        list.querySelectorAll(':scope > * > .flex').forEach((line) => {
-          line.style.flexWrap = 'wrap'
-          ;[...line.children].slice(2).forEach((bar) => Object.assign(bar.style, { flexBasis: 'calc(100% - 16px)', marginLeft: '16px', flexGrow: '0' }))
-        })
-      }
-      // The tropes keep their first four, first occurrence of each
-      const seen = new Set()
-      if (i === 2) [...list.children].forEach((el) => {
-        const name = el.firstElementChild?.innerText.trim()
-        if (!name || seen.has(name) || seen.size >= 4) el.style.display = 'none'
-        else seen.add(name)
-      })
-      sections[i].querySelector('.card__back-section-title').style.textAlign = 'center'
-      content.style.zoom = 1
-      Object.assign(content.style, { paddingLeft: '6px', paddingRight: '6px' })
-      content.scrollTop = 0
-      const zoom = Math.min(2.2, (content.clientHeight - 24) / sections[i].getBoundingClientRect().height)
-      content.style.zoom = zoom
+      const sheet = document.querySelector('.cd__zoom-sheet')
+      const sections = [...sheet.querySelectorAll('.cd__sheet-section')]
+      ;[...sheet.children].forEach((el) => { el.style.display = el === sections[i] ? '' : 'none' })
+      sheet.style.zoom = 1
+      const zoom = Math.min(2.2, (sheet.clientHeight - 96) / sections[i].getBoundingClientRect().height)
+      sheet.style.zoom = zoom
+      sheet.style.padding = `${48 / zoom}px ${40 / zoom}px`
+      sheet.style.boxShadow = `inset 0 0 0 ${16 / zoom}px #0a0a0a, inset 0 0 0 ${32 / zoom}px #0f0f0f`
+      sheet.style.borderRadius = `${22 / zoom}px`
       // Every card's title at the same size whatever its section's zoom
-      sections[i].querySelector('.card__back-section-title').style.zoom = 1.6 / zoom
+      sections[i].querySelector('h4').style.zoom = 1.6 / zoom
     }, i)
-    await sleep(2500)
+    await sleep(800)
     await page.screenshot({ path: `${WORK}clue-${i}.png`, clip })
   }
   await page.close()
@@ -203,7 +164,6 @@ const clueCards = async (browser, slug, verdicts) => {
 
 const today = async () => {
   const { gameDay } = await api('/daily')
-  const { slug } = await api('/daily/reveal')
   rmSync(WORK, { recursive: true, force: true })
   mkdirSync(`${WORK}holo`, { recursive: true })
   const browser = await chromium.launch()
@@ -222,20 +182,14 @@ const today = async () => {
   await shot(fresh, await box(fresh, '[data-readme="play"]'), `${WORK}play.png`)
   await fresh.close()
 
-  // Two skips in: the dock's number, the riddle's title and facts, the popins' verdicts, the holo poster
-  const { page, band } = await openBand(browser, 2)
+  // Two skips in: the dock's number, the riddle's title and facts, the holo poster
+  const { page } = await openBand(browser, 2)
   await page.addStyleTag({ content: `${TRANSPARENT} .band.cd { --card-w: 220px; } .cd__card-rotator, .cd__card-shine, .cd__card-glare { transition: none !important; }` })
   await page.mouse.move(0, 0)
   await sleep(600)
   await shot(page, await tight(page, '.cd__dock-header'), `${WORK}logo.png`)
   await shot(page, await box(page, '.cd__film-title .cd__pixelated'), `${WORK}title.png`)
   await shot(page, await tight(page, '.cd__meta'), `${WORK}meta.png`)
-  await band.locator('.cd__signature figure .cinetropes__glyph').first().click()
-  await sleep(600)
-  const verdicts = await page.locator('.cinetropes__tip-rows li small').allInnerTexts()
-  await page.keyboard.press('Escape')
-  await page.mouse.move(0, 0)
-  await sleep(400)
 
   // The holo the band shows once a game is won, driven here: flat, then one sweep of the pointer across the card,
   // the shine and the glare rising and falling on sin²
@@ -264,7 +218,7 @@ const today = async () => {
   }
   await page.close()
 
-  await clueCards(browser, slug, verdicts)
+  await clueCards(browser)
 
   // Yesterday's answer, kept by the reveal run of the day before
   const kept = existsSync(`${STATE}day.json`) && JSON.parse(readFileSync(`${STATE}day.json`, 'utf8')).gameDay === gameDay - 1
