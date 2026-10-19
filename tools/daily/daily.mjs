@@ -129,7 +129,7 @@ const clueCards = async (browser) => {
   await page.addStyleTag({ content: `
     .cd__zoom-card { left: 40px !important; top: 40px !important; width: 514px !important; height: 772px !important; transform: none !important; }
     .cd__zoom-rotator, .cinetropes__close { visibility: hidden !important; }
-    .cd__zoom-sheet { inset: 0; padding: 48px 40px; border-radius: 22px; background: #0a0a0a; box-shadow: inset 0 0 0 16px #0a0a0a, inset 0 0 0 32px #0f0f0f; }
+    .cd__zoom-sheet { inset: 0; background: #0a0a0a; }
     .cd__zoom-sheet, .cd__zoom-sheet * { animation: none !important; }
     .cd__sheet-section h4 { text-align: center; }
     /* The chart centred on top, its values under it; Atmosphere's eight axes on two columns; the tropes closed, their first four */
@@ -141,21 +141,23 @@ const clueCards = async (browser) => {
     .cd__zoom-sheet .cinetropes__tip-rows:has(> :nth-child(8)) .cinetropes__bar { order: 1; flex-basis: calc(100% - 16px); margin-left: 16px; }
     .cd__zoom-sheet .cinetropes__trope-body, .cd__zoom-sheet .cinetropes__tropes > :nth-child(n + 5) { display: none !important; }
   ` })
-  const clip = { x: 40, y: 40, width: 514, height: 772 }
-  for (let i = 0; i < 3; i++) {
-    await page.evaluate((i) => {
+  const clip = await box(page, '.cd__zoom-card')
+  // The band leaves Tropes out of a film with fewer than three, and puts the palette after it
+  for (const [i, name] of ['Reception', 'Atmosphere', 'Tropes'].entries()) {
+    await page.evaluate((name) => {
       const sheet = document.querySelector('.cd__zoom-sheet')
-      const sections = [...sheet.querySelectorAll('.cd__sheet-section')]
-      ;[...sheet.children].forEach((el) => { el.style.display = el === sections[i] ? '' : 'none' })
+      const section = [...sheet.querySelectorAll('.cd__sheet-section')].find((s) => s.querySelector('h4').textContent === name)
+      if (!section) throw new Error(`the band's card back has no ${name}`)
+      ;[...sheet.children].forEach((el) => { el.style.display = el === section ? '' : 'none' })
       sheet.style.zoom = 1
-      const zoom = Math.min(2.2, (sheet.clientHeight - 96) / sections[i].getBoundingClientRect().height)
+      const zoom = Math.min(2.2, (sheet.clientHeight - 96) / section.getBoundingClientRect().height)
       sheet.style.zoom = zoom
       sheet.style.padding = `${48 / zoom}px ${40 / zoom}px`
       sheet.style.boxShadow = `inset 0 0 0 ${16 / zoom}px #0a0a0a, inset 0 0 0 ${32 / zoom}px #0f0f0f`
       sheet.style.borderRadius = `${22 / zoom}px`
       // Every card's title at the same size whatever its section's zoom
-      sections[i].querySelector('h4').style.zoom = 1.6 / zoom
-    }, i)
+      section.querySelector('h4').style.zoom = 1.6 / zoom
+    }, name)
     await sleep(800)
     await page.screenshot({ path: `${WORK}clue-${i}.png`, clip })
   }
