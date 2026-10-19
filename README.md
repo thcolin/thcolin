@@ -57,6 +57,19 @@
 <br />
 
 <p align="center">
+  <a href="https://thcol.in/#cinetropes-tcg"><img src="images/tcg.webp" width="100%" alt="cinetropes tcg: a popcorn booster torn open, its five film cards turned one by one and put away in glass cases, from Common to Legendary" /></a>
+</p>
+
+<br />
+
+<p align="center">
+  <a href="https://thcol.in/#cinetropes-tcg"><b>cinetropes tcg</b></a><br />
+  <sub>A trading card game of films. Five per pack, a new pack every 20 minutes, from Common to Legendary.</sub>
+</p>
+
+<br />
+
+<p align="center">
   <img src="images/sensorr.webp" width="100%" alt="sensorr's interface, and a sensorr wrapped on a phone" />
 </p>
 

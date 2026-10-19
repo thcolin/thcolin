@@ -7,6 +7,7 @@ repository (`../thcol.in`, or `THCOL_IN`) for Playwright, three.js and the proje
 |---|---|---|
 | `images/daily.webp` | `daily/daily.mjs`, run every day by `.github/workflows/daily.yml` | nothing local: it reads thcol.in and daily.cinetropes.com online |
 | `images/head.png`, `images/prompt-*.png` | `readme/render-readme.mjs head,prompt-about,prompt-projects,prompt-3d` | the mock served on port 8093 (below) |
+| `images/tcg.webp` | `apps/tcg.mjs`, then each frame of `apps/frames-tcg/` resized to 830 px and `img2webp -loop 0 -lossy -q 70 -d 67` | a production build of thcol.in served on port 8082 |
 | `images/retro.webp`, `sensorr.webp`, `printing.webp` | `readme/render-readme.mjs retro,sensorr,printing`, then `img2webp -lossy -q 70 -d 50` on each frame folder | the mock served on port 8093, with its media |
 
 ## The mock
