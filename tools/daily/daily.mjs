@@ -56,10 +56,10 @@ const openBand = async (browser, skips, { play = true } = {}) => {
   await sleep(1200)
   const band = page.locator('article.cd')
   if (play) {
-    await band.getByRole('button', { name: 'Play' }).click()
+    await band.getByRole('button', { name: 'Play', exact: true }).click()
     await sleep(800)
     for (let i = 0; i < skips; i++) {
-      await band.getByRole('button', { name: 'Skip' }).click()
+      await band.getByRole('button', { name: 'Skip', exact: true }).click()
       await sleep(1800)
     }
   }
@@ -174,7 +174,7 @@ const today = async () => {
   const { page: fresh } = await openBand(browser, 0, { play: false })
   await fresh.addStyleTag({ content: TRANSPARENT })
   await fresh.mouse.move(0, 0)
-  const play = fresh.locator('article.cd').getByRole('button', { name: 'Play' })
+  const play = fresh.locator('article.cd').getByRole('button', { name: 'Play', exact: true })
   await play.evaluate((b) => { b.dataset.readme = 'play' })
   await heroTitle(fresh, ['Guess', 'the Movie of the Day'], `${WORK}hero-guess.png`)
   await fresh.evaluate(() => {
